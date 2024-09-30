@@ -1,7 +1,7 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 group 'me.realized.de'
-version '1.1.2'
+version = '1.1.2'
 
 apply plugin: 'java'
 
@@ -20,27 +20,27 @@ repositories {
 
     maven {
         name 'spigot-repo'
-        url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots'
+        url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' // This one is fine.
     }
 
     maven {
         name 'bungeecord-repo'
-        url 'https://oss.sonatype.org/content/repositories/snapshots'
+        url 'https://oss.sonatype.org/content/repositories/snapshots' // This one is fine.
     }
 
     maven {
         name 'clip-repo'
-        url 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
+        url 'https://repo.extendedclip.com/content/repositories/placeholderapi/' // Update to HTTPS
     }
 
     maven {
         name 'codemc-repo'
-        url 'https://repo.codemc.io/repository/maven-public/'
+        url 'https://repo.codemc.io/repository/maven-public/' // This one is fine.
     }
 
     maven {
         name 'jitpack-repo'
-        url 'https://jitpack.io'
+        url 'https://jitpack.io' // This one is fine.
     }
 
     flatDir {
@@ -48,18 +48,27 @@ repositories {
     }
 }
 
+
 dependencies {
-    compile 'org.projectlombok:lombok:1.18.22'
-    compile 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT'
-    compile 'me.clip:placeholderapi:2.11.1'
-    compile (name: 'MVdWPlaceholderAPI-3.1.1') {
+    compileOnly 'org.projectlombok:lombok:1.18.28' // Последняя версия Lombok
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    compileOnly 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT'
+    compileOnly 'me.clip:placeholderapi:2.11.1'
+    compileOnly (name: 'MVdWPlaceholderAPI-3.1.1') {
         transitive = false
     }
-    compile 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.3.0'
-    compile 'com.github.Realizedd.Duels:duels-api:3.5.0'
-    compile 'com.github.MilkBowl:VaultAPI:1.7'
+    compileOnly (name: 'EclipseDuels-4.0.1') {
+        transitive = false
+    }
+    compileOnly 'com.gmail.filoghost.holographicdisplays:holographicdisplays-api:2.3.0'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7'
 }
 
 jar {
-    archiveName = archiveName.replace("DE-", "")
+    archiveFileName = archiveFileName.get().replace("DE-", "")
+}
+
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    expand 'VERSION': project.version
 }

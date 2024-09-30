@@ -21,28 +21,31 @@ import me.realized.duels.api.kit.KitManager;
 import me.realized.duels.api.user.UserManager;
 import me.realized.duels.api.user.UserManager.TopData;
 import me.realized.duels.api.user.UserManager.TopEntry;
+import me.realized.eclipseduels.shaded.morepaperlib.scheduling.ScheduledTask;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class Leaderboards extends DuelsExtension implements Listener {
 
-    @Getter
-    private UserManager userManager;
-    @Getter
+    // Возвращаем менеджер таблиц лидеров
+    private LeaderboardManager leaderboardManager;
+    // Возвращаем менеджер наборов
     private KitManager kitManager;
-    @Getter
-    private ArenaManager arenaManager;
-
+    // Возвращаем конфигурацию
     @Getter
     private Config configuration;
-    @Getter
-    private LeaderboardManager leaderboardManager;
+    // Возвращаем VaultHook
     @Getter
     private VaultHook vaultHook;
 
+    @Getter
+    private UserManager userManager;
+    @Getter
+    private ArenaManager arenaManager;
+
     private final List<Updatable<Kit>> updatables = new ArrayList<>();
-    private int updateTask;
+    private ScheduledTask updateTask;
 
     @Override
     public void onEnable() {
@@ -55,7 +58,7 @@ public class Leaderboards extends DuelsExtension implements Listener {
         api.registerSubCommand("duels", new LeaderboardCommand(this));
         api.registerListener(leaderboardManager);
         api.registerListener(this);
-        this.updateTask = api.doSyncRepeat(() -> leaderboardManager.update(), 20L * 5, 20L * configuration.getChangeCheckInterval()).getTaskId();
+        this.updateTask = api.doSyncRepeat(() -> leaderboardManager.update(), 20L * 5, 20L * configuration.getChangeCheckInterval());
         doIfFound("MVdWPlaceholderAPI", () -> register(MVdWPlaceholderHook.class));
         doIfFound("PlaceholderAPI", () -> register(PlaceholderHook.class));
         doIfFound("Vault", () -> this.vaultHook = new VaultHook(this));
@@ -187,4 +190,12 @@ public class Leaderboards extends DuelsExtension implements Listener {
     public void on(final KitCreateEvent event) {
         updatables.forEach(updatable -> updatable.update(event.getKit()));
     }
+
+    public LeaderboardManager getLeaderboardManager() {
+        return this.leaderboardManager;
+    }
+    public KitManager getKitManager() {
+        return this.kitManager;
+    }
+
 }
